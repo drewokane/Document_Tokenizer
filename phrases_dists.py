@@ -1,6 +1,6 @@
 print("""Phrases_Dist v 0.1.1
 Author: Drew E. O'Kane
-License: GPL v 2.0
+License: GPLv3
 """)
 
 import re,os,sys
@@ -22,15 +22,7 @@ filelist = [f for f in os.listdir(os.getcwd()) if f.rfind('.txt') is not -1]
 #same directory as the text files. Have commands end in () so as to distinguish
 #from search terms. ToDo: Build a general function or class that applys the
 #desired command.
-exstring = re.compile("exit\(\)",re.IGNORECASE)
-
-def command_parser(string):
-    command = re.compile("\w*.\(\)",re.I)
-    if command.search(string) is not None:
-        #This is where the list of commands goes, possibly a dictionary
-        pass
-    else:
-        return None
+exstring = re.compile("exit\(\)",re.I)
 
 
 while 1:
@@ -55,12 +47,23 @@ while 1:
             print(biz.mutual_dist)
          
 
+#############
+class DjinnMaker(object):
+    '''DjinnMaker is an atempt to create a general class which acts as an interactive prompt.
+    It initializes a loop and populates a help list of functions it can perform. It also includes
+    a method for exiting.'''
 
-##phrase = ['business','financ','operat']
-##biz.search_words(phrase)
-##
-##
-##for f in filelist:
-##    biz.corpus(f)
-##    biz.whereabouts()
-##    print(biz.mutual_dist)
+    def __init__(self):
+        self.status = True
+
+        #Inner class dependent messages and functions
+        print("PhraseDjinn\nAuthor:D.E. O'Kane\nLicense: GPLv3\nCopyright (c) 2011 D.E. O'Kane")
+        print("For a list of available commands, type help at the prompt.")
+        methods = dir(PhraseDist)
+
+        ##General functions to display all the methods available to utilize
+        builtinmethod = re.compile('__(\w*.)__',re.I)
+        methods = [method for method in methods if builtinmethod.search(method) is None]
+
+        while self.status is True:
+            prompt = str(input("PhraseDjinn: "))
