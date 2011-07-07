@@ -17,11 +17,25 @@ filelist = [f for f in os.listdir(os.getcwd()) if f.rfind('.txt') is not -1]
 
 #Get user input for phrase
 
-exstring = re.compile("exit",re.IGNORECASE)
+#Reserve certain commands for various tasks. Need to add functionality, e.g. 
+#change working directory so there isn't a need to have the software in the
+#same directory as the text files. Have commands end in () so as to distinguish
+#from search terms. ToDo: Build a general function or class that applys the
+#desired command.
+exstring = re.compile("exit\(\)",re.IGNORECASE)
+
+def command_parser(string):
+    command = re.compile("\w*.\(\)",re.I)
+    if command.search(string) is not None:
+        #This is where the list of commands goes, possibly a dictionary
+        pass
+    else:
+        return None
+
 
 while 1:
 
-    uinput = str(input("Enter search phrase terms or type exit to close: "))
+    uinput = str(input("Enter search phrase terms or type exit() to close: "))
     
     if exstring.search(uinput) is not None:
     

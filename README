@@ -1,5 +1,18 @@
 Document_Tokenizer
 
+author: D.E. O'Kane
+
 License: GPLv3
 
-A set of tools and classes to tokenize and extract information from documents of all kinds.
+A set of tools and classes to tokenize and extract information from documents of all kinds. 
+The main goal of this project is to build a set of tools and classes much in the same vein as
+the well known Natural Language Toolkit (nltk.org), i.e. word stemmers, natural language 
+processing routines, and possibly even statistical routines.
+
+My current wish list includes:
+
+> A word stemmer (Porter or otherwise. I need a robust stemming method.)
+> A more refined interface, not necessarily GUI, with ability to call various methods and 
+functions on a data set of documents.
+> Descriptive statistics routines for a data set, e.g. word counts, percentage of document 
+that is single occurence words (i.e. hapax legomena).
