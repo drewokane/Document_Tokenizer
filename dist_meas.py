@@ -35,8 +35,13 @@ class PhraseDist(object):
         self.mutual_dist = {}
 
     def corpus(self,text):
-        '''A method which opens a text file, coverts it to UTF-8
+        '''Usage: corpus filname
+        corpus - command 
+        filename - name of file
+        
+        A method which opens a text file, coverts it to UTF-8
         encoding, and then cleans out non-word characters.'''
+
         print("Opening",text)
         doc = codecs.open(text,'r','utf8',errors='replace').read()
         doc_clean = re.sub("[^a-zA-Z ]"," ",doc)
@@ -45,7 +50,11 @@ class PhraseDist(object):
         self.document = tokens
 
     def search_words(self,search_terms):
-        '''A method which accepts a list of the words making 
+        '''Usage: search_words word1 word2 word3 ...
+        search_words - command
+        word1... - words that make up search phrase separated by whitespace
+        
+        A method which accepts a list of the words making 
         up the phrase you wish to find in the document provided 
         by the corpus() method.'''
 
@@ -54,7 +63,10 @@ class PhraseDist(object):
         self.mutual_dist = dict.fromkeys(search_terms,0)
 
     def whereabouts(self):
-        '''This method performs a search for the words specified
+        '''Usage: whereabouts
+        whereabouts - command
+        
+        This method performs a search for the words specified
         in the search_words method and finds the minimum distance 
         between the set of words, relative to the word with the 
         least number of indicies. The resulting distances are 
@@ -87,10 +99,4 @@ class PhraseDist(object):
                 
         
     
-    
-#wordies = 
-
-#doc = legdoc.MACdoc()
-
-#tokens = doc.corpus_tokens()
 
