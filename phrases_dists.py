@@ -8,9 +8,6 @@ sys.path += ['/home/deokane/Dropbox/Documents/Eclipse/MAC_parser/src']
 
 #sys.path += ['C:\\Users\\deokane\\Dropbox\\Documents\\Eclipse\\MAC_parser\\src']
 #os.chdir('C:\\Users\\deokane\\Dropbox\\Documents\\Eclipse\\MAC_parser\\src')
-os.chdir('/home/deokane/Dropbox/Documents/Eclipse/MAC_parser/src')
-from dist_meas import PhraseDist
-biz = PhraseDist()
 
 
 filelist = [f for f in os.listdir(os.getcwd()) if f.rfind('.txt') is not -1]
@@ -22,36 +19,10 @@ filelist = [f for f in os.listdir(os.getcwd()) if f.rfind('.txt') is not -1]
 #same directory as the text files. Have commands end in () so as to distinguish
 #from search terms. ToDo: Build a general function or class that applys the
 #desired command.
-exstring = re.compile("exit\(\)",re.I)
-
-
-while 1:
-
-    uinput = str(input("Enter search phrase terms or type exit() to close: "))
-    
-    if exstring.search(uinput) is not None:
-    
-        print("Thank you for using Phrases_Dist v 0.1.1")
-        break
-
-    else:
-    
-        phrase = uinput.split()
-
-        biz.search_words(phrase)
-
-
-        for f in filelist:
-            biz.corpus(f)
-            biz.whereabouts()
-            print(biz.mutual_dist)
-         
-
 #############
 class DjinnMaker(object):
     '''DjinnMaker is an atempt to create a general class which acts as an interactive prompt.
-    It initializes a loop and populates a help list of functions it can perform. It also includes
-    a method for exiting.'''
+    It initializes a loop and populates a help list of functions it can perform.'''
 
     def __init__(self):
         self.status = True
@@ -87,7 +58,7 @@ class DjinnMaker(object):
         
         return True
 
-    def corpus(self,text):
+    def corpus(self,filename):
         '''corpus -> load a text document for searching
         
         Usage: corpus filepath
@@ -97,8 +68,8 @@ class DjinnMaker(object):
         A method which opens a text file, coverts it to UTF-8
         encoding, and then cleans out non-word characters.'''
 
-        print("Opening",text)
-        doc = codecs.open(text,'r','utf8',errors='replace').read()
+        print("Opening",filename)
+        doc = codecs.open(filename,'r','utf8',errors='replace').read()
         doc_clean = re.sub("[^a-zA-Z ]"," ",doc)
         doc_low = doc_clean.lower()
         tokens = doc_low.split()
@@ -167,4 +138,9 @@ class DjinnMaker(object):
         print('''PhraseDjinn is now exiting...''')
 
         return False
-                            
+
+
+
+
+
+DjinnMaker().djinn_start()                            

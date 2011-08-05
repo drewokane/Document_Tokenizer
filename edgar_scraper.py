@@ -29,66 +29,68 @@ elif (now.month < 10) and (now.month > 6):
 elif (now.month > 9):
     qrtr += "4"
 
+
+
 ####
+cyear = '2010'
+quarter = ['QTR1','QTR2','QTR3','QTR4']
 
 
-# Set the working directory to current year and quarter
-current_dir = "/edgar/full-index/"+cyear+"/"+qrtr
+for qrtr in quarter:
+    # Set the working directory to current year and quarter
+    current_dir = "/edgar/full-index/"+cyear+"/"+qrtr
 
-print("Opening directory:",current_dir)
+    print("Opening directory:",current_dir)
 
-edgar.cwd(current_dir)
+    edgar.cwd(current_dir)
 
-#edgar.dir()
+    #edgar.dir()
 
-# Save a file of the current quarter's filings by form
-print("Retrieving list of current quarter\'s filings...")
-t0 = time.clock()
-edgar.retrbinary("RETR form.idx",open("cur_qrtly_filings-"+cyear+"-"+qrtr+".idx","wb").write)
-dt = str(float(time.clock() - t0)/60)
-print("Elapsed time to perform retrieval:",dt,"minutes")
-forms_idx = open("cur_qrtly_filings-"+cyear+"-"+qrtr+".idx","r").readlines()
+    # Save a file of the current quarter's filings by form
+    print("Retrieving list of current quarter\'s filings...")
+    t0 = time.clock()
+    edgar.retrbinary("RETR form.idx",open("cur_qrtly_filings-"+cyear+"-"+qrtr+".idx","wb").write)
+    dt = str(float(time.clock() - t0)/60)
+    print("Elapsed time to perform retrieval:",dt,"minutes")
+    forms_idx = open("cur_qrtly_filings-"+cyear+"-"+qrtr+".idx","r").readlines()
 
-# Write out a file containing only the merger filings
-merg_filings = open("DEFM14A_filings-"+cyear+"-"+qrtr+".idx","w")
-paths = []
-defm14 = re.compile("DEFM14A ")
+    # Write out a file containing only the merger filings
+    merg_filings = open("DEFM14A_filings-"+cyear+"-"+qrtr+".idx","w")
+    paths = []
+    defm14 = re.compile("DEFM14A ")
 
-# Also collect ftp paths for each merger so we can download them.
-for line in forms_idx:
-	if defm14.match(line) is not None:
-		print(line)
-		paths.append(line.split()[-1])
-		merg_filings.write(line)
+    # Also collect ftp paths for each merger so we can download them.
+    for line in forms_idx:
+            if defm14.match(line) is not None:
+                    print(line)
+                    paths.append(line.split()[-1])
+                    merg_filings.write(line)
 
-merg_filings.close()
+    merg_filings.close()
 
-os.chdir("C://Documents and Settings//!law-visitor//My Documents//MAC parser project//EDGAR//"+cyear+"//"+qrtr)
+    os.chdir("C://Users//deokane//Dropbox//Documents//Eclipse//MAC_parser//src//"+cyear+"//"+qrtr)
 
-i = 1
-for path in paths:
-	filing_path = path.split("/")
-	name = filing_path[-1]
-	name = re.sub("-","",name)
-	filing_path[-1] = name[:-4]
-	folder = "/".join(filing_path)
-	edgar.cwd("/"+folder+"/")
-	files = [file for file in edgar.nlst() if file.endswith(".htm") and ("index" not in file)]
-##	try:
-##            name = files[-1]
-##	    print("Downloading",name,"File",str(i),"of",str(len(paths)))
-##	    edgar.retrbinary("RETR "+name,open(filing_path[-1]+".htm","wb").write)
-##	    i += 1
-##	except IndexError as IE:
-##                print("HTML filing document does not exist for file",folder)
-##                print(IE)
-	if len(files) > 0:
-		name = files[-1]
-		print("Downloading",name,"File",str(i),"of",str(len(paths)))
-		edgar.retrbinary("RETR "+name,open(filing_path[-1]+".htm","wb").write)
-		i += 1
-	else:
-		print("HTML filing document does not exist for file",folder)
+    i = 1
+    for path in paths:
+            filing_path = path.split("/")
+            name = filing_path[-1]
+            name = re.sub("-","",name)
+            filing_path[-1] = name[:-4]
+            folder = "/".join(filing_path)
+            edgar.cwd("/"+folder+"/")
+            files = [file for file in edgar.nlst() if file.endswith(".htm") and ("index" not in file)]
+            try:
+                name = files[-1]
+                print("Downloading",name,"File",str(i),"of",str(len(paths)))
+                edgar.retrbinary("RETR "+name,open(filing_path[-1]+".htm","wb").write)
+                i += 1
+            except IndexError as IE:
+                print("HTML filing document does not exist for file",folder)
+                print(IE)
+            except socket.error:
+                print("Unable to retrieve file!")
+                print("Connection forceably closed by remote host!")
+            
 
 ####
 
@@ -98,5 +100,5 @@ print("Finished updating merger files!")
 
 # Execute the ticker scraping script
 
-exec(open("securities_info_scrobbler.py","r").read())
+#exec(open("securities_info_scrobbler.py","r").read())
 
