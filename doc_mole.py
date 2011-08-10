@@ -55,8 +55,9 @@ def logit_regression(y,X,beta=None,MAX_ITER=200,THRESH=1e-4):
 
 
 def bowcat(filelist):
-    ''' Create a master list of all the words that occur in all of our documents. We must
-    go through all documents for the reason that a particular word may be unique to
+    ''' Creates a master list of all the words that occur in 
+    all of the documents provided in filelist. We must go through
+    all documents for the reason that a particular word may be unique to
     a document and may be skipped otherwise. '''
     bag_of_words = []
     checker = lambda word: word not in bag_of_words
@@ -1199,7 +1200,8 @@ class MACdoc(object):
     def __init__(self,doc):
         self.doc = codecs.open(doc,"r",'utf8',errors='replace')
         self.document = self.doc.read()
-        self.doclines = self.doc.readlines()
+        self.doc2 = codecs.open(doc,'r','utf8',errors='replace')
+        self.doclines = self.doc2.readlines()
         
     def corpus_tokens(self):
         """A list of the words in the document."""
@@ -1207,14 +1209,14 @@ class MACdoc(object):
         doc_clean = re.sub("[^a-zA-Z ]"," ",document)
         doc_low = doc_clean.lower()
         tokens = doc_low.split()
-        #print("Number of tokens: " + str(len(tokens)))
+        print("Number of tokens:",str(len(tokens)))
         return tokens
     
     def corpus_types(self):
         """A list of the types (i.e. unique words) found in the document."""
         document = self.corpus_tokens()
         types = list(set(document))
-        #print("Number of types: " + str(len(types)))
+        print("Number of types:",str(len(types)))
         return types
     
     def provisions(self,func_list):
@@ -1374,15 +1376,16 @@ class DocMole(object):
 
     def __init__(self):
         self.status = True
+        self.cwd = os.getcwd()
         self.docs_dict = []
         self.provisions = []
         self.words_freq = []
         self.lexical_param = []
         self.boolean = []
         self.document_list = []
-        self.mutual_dist = {}
         self.kitchen_sink = []
-        self.functions = ['help','exit','chdir','doc_list','list','process','generate']
+        self.prin_comp = []
+        self.functions = ['help','exit','chdir','doc_list','list','process','generate','stats','pca']
 
     def mole_start(self):
         '''Start the phrase search program.'''
@@ -1411,7 +1414,10 @@ class DocMole(object):
 
     def help(self):
         '''help -> A list of all available commands and the 
-        included documentation.'''
+        included documentation.
+
+        Usage: help
+        help - command'''
 
         print("""DocMole v 1.0
         Help documentation
@@ -1424,7 +1430,10 @@ class DocMole(object):
         return True
 
     def exit(self):
-        '''exit -> exit program'''
+        '''exit -> exit program
+
+        Usage: exit
+        exit - command'''
 
         print('''DocMole is now exiting...''')
 
@@ -1432,6 +1441,7 @@ class DocMole(object):
 
     def list(self):
         '''list -> list the current directory's files
+
         Usage: list
         list - command'''
 
@@ -1449,11 +1459,12 @@ class DocMole(object):
         chdir - command
         directory - the full directory path you wish to make your current working directory'''
 
+        print('Current working directory:',self.cwd)
         print("Changing to directory:",new_dir)
 
         try:
             os.chdir(new_dir)
-
+            self.cwd = os.getcwd()
         except OSError as errmsg:
             print("Directory does not exist or is mispelled!")
             print("Error message: {0}".format(errmsg))
@@ -1466,14 +1477,14 @@ class DocMole(object):
         Usage: doc_list
         doc_list - command'''
         
-        print("You are currently working in:",os.getcwd())
+        print("You are currently working in:",self.cwd)
         uinput = input("Do you wish to change to a different directory (y or n)? ")
         
         if re.search('y',uinput,re.I) is not None:
             print("Use the chdir command to change directories...")
         
         elif re.search('n',uinput,re.I) is not None:
-            files = os.listdir(os.getcwd())
+            files = os.listdir(self.cwd)
             self.document_list = sorted([name for name in files if name.find(".txt") is not -1])
 
         else:
@@ -1487,7 +1498,9 @@ class DocMole(object):
 
         Usage: process [provisions=[] tf_idf=False]
         process - command
-        provisions - list of function names'''
+        provisions - optional list of function names. currently set to M & A provision coding functions.
+        tf_idf - an optional flag, default is False. calculates word frequencies as token frequency
+                 inverse document frequency if set to True.'''
 
         funcs_names = [f.__name__ for f in provisions]
 
@@ -1557,6 +1570,14 @@ class DocMole(object):
 
             i += 1
 
+        self.kitchen_sink = numpy.hstack((self.lexical_param,self.boolean,self.word_freq))
+
+        return True
+
+    def stats(self):
+        '''stats -> displays vital statistics of all documents, e.g. total word count, 
+        percentage of document that is hapax legomena (single occurence words)'''
+        
         return True
 
     def generate(self,name):
@@ -1565,9 +1586,7 @@ class DocMole(object):
 
         Usage: generate name
         generate - command
-        name - name of csv file to be written out (exclude .csv ending). name should be all one word, only alphanumeric characters
-        tf_idf - an optional command flag which is set to False by default. recalculates frequency 
-        counts in terms of token frequency inverse document frequency.'''
+        name - name of csv file to be written out (exclude .csv ending). name should be all one word, only alphanumeric characters'''
 
         print('Generating tables....')
         funcs_names = self.provisions
@@ -1584,8 +1603,6 @@ class DocMole(object):
                         ["_".join(word.split()) for word in docs_dict_new]
 
         MAC_csv.writerow(col_names)
-
-        self.kitchen_sink = numpy.zeros((len(self.document_list),len(col_names)-2),dtype=float)
 
         i = 0
 
@@ -1612,7 +1629,37 @@ class DocMole(object):
 
 
         return True
+
+    def pca(self,name):
+        '''pca -> performs a principal component analysis of the processed data 
+        and writes the resulting principal components to a csv file, with a 
+        name of the users choosing
+
+        Usage: pca name
+        pca - command
+        name - name of csv file to be written (excluding .csv suffix). file name 
+               should contain only alphanumeric characters and no spaces.'''
+
+        for i in range(self.kitchen_sink.shape[1]):
+            self.kitchen_sink[:,i] = self.kitchen_sink[:,i] - numpy.mean(self.kitchen_sink[:,i])
+    
+        print("Computing the principal components of the matrix...")
+        t0 = time.clock()
+        U,D,Vt = numpy.linalg.svd(self.kitchen_sink)
+        dt = time.clock() - t0
+        print("Elapsed time to compute singular value decomposition: ",dt)
+        pc_matrix = csv.writer(open(name + ".csv","w"),lineterminator="\n")
         
+        self.prin_comp = U*D
+        
+        print('Writing principal component matrix to',name+'.csv')
+    
+        for i in range(self.prin_comp.shape[0]):
+            pc_matrix.writerow(self.prin_comp[i,:])
+        
+        print(name+'.csv','written successfully!')
+
+        return True
 
 
 DocMole().mole_start()
