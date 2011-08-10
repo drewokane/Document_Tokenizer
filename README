@@ -9,10 +9,22 @@ The main goal of this project is to build a set of tools and classes much in the
 the well known Natural Language Toolkit (nltk.org), i.e. word stemmers, natural language 
 processing routines, and possibly even statistical routines.
 
+News:
+
+Release of v 2.0! At last there is now a (somewhat) refined user interface! The basic tools work,
+namely the LSA and RE analysis tools, and there is a bit of help documentation for each function
+to help you in your strugglings. This release represents a major step forward in functionality,
+user interface, and program flexibility.
+
+-->Functionality: Users can now change the working directory of the program and subsequent csv
+   files are written to the working directory.
+-->User Interface: Users now don't have to be as programmatically inclined. All the tools that
+   are used are now collected in an interactive interface along with helpful documentation.
+-->Program Flexibility: As from before, users can use the program to perform merger & aquisition
+   specific processes (provision searches) or also perform more general analysis, i.e. PCA.
+
 My current wish list includes:
 
 > A word stemmer (Porter or otherwise. I need a robust stemming method.)
-> A more refined interface, not necessarily GUI, with ability to call various methods and 
-functions on a data set of documents.
 > Descriptive statistics routines for a data set, e.g. word counts, percentage of document 
 that is single occurence words (i.e. hapax legomena).
